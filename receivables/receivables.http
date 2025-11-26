@@ -1,0 +1,6 @@
+@receivables_HostAddress = http://localhost:5083
+
+GET {{receivables_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
