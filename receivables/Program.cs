@@ -8,7 +8,6 @@ using receivables.Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adicionar serviços ao contêiner
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -17,7 +16,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Version = "v1",
         Title = "Receivables API",
-        Description = "API para gerenciamento de recebíveis e antecipação de notas fiscais",
+        Description = "API para gerenciamento de recebï¿½veis e antecipaï¿½ï¿½o de notas fiscais",
         Contact = new()
         {
             Name = "Receivables Team"
@@ -27,22 +26,18 @@ builder.Services.AddSwaggerGen(c =>
     c.EnableAnnotations();
 });
 
-// Configuração do DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Server=(localdb)\\mssqllocaldb;Database=ReceivablesDb;Trusted_Connection=True;MultipleActiveResultSets=true"),
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Host=localhost;Database=receivables_db;Username=receivables;Password=receivables123"),
     ServiceLifetime.Scoped);
 
-// Registro de serviços de domínio
 builder.Services.AddSingleton<ICreditLimitCalculator, CreditLimitCalculator>();
 builder.Services.AddSingleton<AnticipationCalculator>();
 
-// Registro de repositórios
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 
-// Registro de serviços de aplicação
 builder.Services.AddScoped<ICompaniesService, CompaniesService>();
 builder.Services.AddScoped<IInvoicesService, InvoicesService>();
 builder.Services.AddScoped<ICheckoutService, CheckoutService>();
@@ -50,14 +45,24 @@ builder.Services.AddScoped<ICartService, CartService>();
 
 var app = builder.Build();
 
-// Configurar o pipeline de requisição HTTP
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
 }
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Receivables API v1");
+    c.RoutePrefix = "swagger";
+});
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthorization();
 app.MapControllers();
 

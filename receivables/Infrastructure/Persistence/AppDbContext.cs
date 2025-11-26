@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using receivables.Infrastructure.Entities;
-using Receivables.Domain.Enums;
 
 namespace Receivables.Infrastructure.Persistence;
 
