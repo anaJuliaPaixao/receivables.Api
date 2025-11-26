@@ -17,7 +17,7 @@ public class CompaniesController : ControllerBase
 
     private readonly ICompaniesService _companiesService;
 
-    public CompaniesController(ICompaniesService companiesService )
+    public CompaniesController(ICompaniesService companiesService)
     {
         _companiesService = companiesService;
     }
@@ -34,15 +34,9 @@ public class CompaniesController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(new ValidationErrorsDTO(ModelState));
 
-        try
-        {
-            var result = await _companiesService.CreateAsync(companyRequest);
-            return Ok(result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new ExceptionDTO { ErrorMessage = ex.Message });
-        }
+        var result = await _companiesService.CreateAsync(companyRequest);
+        return Ok(result);
+
     }
 
 }

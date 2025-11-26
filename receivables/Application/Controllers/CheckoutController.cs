@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace receivables.Application.Controllers;
 
 [ApiController]
-[Route("v1")]
+[Route("v1/invoices")]
 [Produces("application/json")]
 [ExcludeFromCodeCoverage]
 [ApiExplorerSettings(GroupName = "v1")]
@@ -22,41 +22,14 @@ public class CheckoutController : ControllerBase
         _checkoutService = checkoutService;
     }
 
-    [HttpGet]
-    [Route("companies/{companyId}/checkout")]
-    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(CheckoutDto))]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ValidationErrorsDTO))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(ExceptionDTO))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ExceptionDTO))]
-    public async Task<ActionResult<CheckoutDto>> GetCheckoutByCompanyId(Guid companyId)
-    {
-        try
-        {
-            var result = await _checkoutService.CalculateCheckoutAsync(companyId);
-            return Ok(result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new ExceptionDTO { ErrorMessage = ex.Message });
-        }
-    }
-
-    [HttpGet]
-    [Route("invoices/{invoiceId}/calculate")]
+    [HttpGet("{invoiceId}/calculate")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(InvoiceCalculationDto))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ValidationErrorsDTO))]
     [SwaggerResponse(StatusCodes.Status404NotFound, Type = typeof(ExceptionDTO))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ExceptionDTO))]
-    public async Task<ActionResult<InvoiceCalculationDto>> CalculateInvoice(Guid invoiceId)
+    public async Task<ActionResult<InvoiceCalculationDto>> CalculateInvoice([Required] Guid invoiceId)
     {
-        try
-        {
-            var result = await _checkoutService.CalculateCheckoutByInvoiceIdAsync(invoiceId);
-            return Ok(result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new ExceptionDTO { ErrorMessage = ex.Message });
-        }
+        var result = await _checkoutService.CalculateCheckoutByInvoiceIdAsync(invoiceId);
+        return Ok(result);
     }
 }

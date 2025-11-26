@@ -33,15 +33,9 @@ public class InvoicesController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(new ValidationErrorsDTO(ModelState));
 
-        try
-        {
-            var result = await _invoicesService.CreateAsync(invoiceRequest);
-            return Ok(result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new ExceptionDTO { ErrorMessage = ex.Message });
-        }
+        var result = await _invoicesService.CreateAsync(invoiceRequest);
+        return Ok(result);
+
     }
 
     [HttpPut]
@@ -56,14 +50,8 @@ public class InvoicesController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(new ValidationErrorsDTO(ModelState));
 
-        try
-        {
-            var result = await _invoicesService.UpdateAsync(id, updateRequest);
-            return Ok(result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new ExceptionDTO { ErrorMessage = ex.Message });
-        }
+        var result = await _invoicesService.UpdateAsync(id, updateRequest);
+        return Ok(result);
+
     }
 }

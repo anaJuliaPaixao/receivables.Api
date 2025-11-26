@@ -27,6 +27,7 @@ namespace receivables.Domain.Services
             {
                 throw new InvalidOperationException($"Já existe uma empresa cadastrada com o CNPJ {companyRequest.Cnpj}");
             }
+
             ValidateMinimumRevenue(companyRequest.MonthlyRevenue);
 
           
